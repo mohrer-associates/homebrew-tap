@@ -2,8 +2,7 @@ cask "wave-ai" do
   version "2.2.8"
   sha256 "da38a28847c9a9154dc465f2a42d39b7338e71756cf55666b65bdbd5a12cfcf8"
 
-  url "https://j2i8lgdonziyik2f.public.blob.vercel-storage.com/Wave-AI-Desktop-#{version}-mac-universal.dmg",
-      verified: "j2i8lgdonziyik2f.public.blob.vercel-storage.com/"
+  url "https://j2i8lgdonziyik2f.public.blob.vercel-storage.com/Wave-AI-Desktop-#{version}-mac-universal.dmg"
   name "Wave AI"
   desc "AI note taker for meetings, calls and conversations"
   homepage "https://wave.co/"
