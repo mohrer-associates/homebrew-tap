@@ -1,0 +1,44 @@
+name: Bump wave-ai
+
+# Polls the same endpoint the wave.co download page uses. It only reports
+# published releases whose DMG is already on the public mirror, so drafts
+# never reach the cask.
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for a new version
+        id: check
+        run: |
+          set -euo pipefail
+          latest=$(curl -fsS -H "X-Requested-With: XMLHttpRequest" "https://app.wave.co/api/desktop-beta?os=mac" | jq -r .version)
+          current=$(sed -nE 's/^  version "([^"]+)"/\1/p' Casks/wave-ai.rb)
+          echo "current=$current latest=$latest"
+          [[ "$latest" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Unexpected version: $latest"; exit 1; }
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "changed=$([ "$latest" != "$current" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Update cask
+        if: steps.check.outputs.changed == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.latest }}
+        run: |
+          set -euo pipefail
+          curl -fsSLo wave.dmg "https://j2i8lgdonziyik2f.public.blob.vercel-storage.com/Wave-AI-Desktop-${VERSION}-mac-universal.dmg"
+          sha=$(sha256sum wave.dmg | cut -d' ' -f1)
+          rm wave.dmg
+          sed -i -E "s/^  version \".*\"/  version \"${VERSION}\"/; s/^  sha256 \".*\"/  sha256 \"${sha}\"/" Casks/wave-ai.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "wave-ai ${VERSION}"
+          git push
