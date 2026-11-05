@@ -1,6 +1,6 @@
 cask "wave-ai" do
-  version "2.2.8"
-  sha256 "da38a28847c9a9154dc465f2a42d39b7338e71756cf55666b65bdbd5a12cfcf8"
+  version "2.2.9"
+  sha256 "c907baf4e8066e1c0010881a4a372476d91f2f287d45d135e6b3840b785703d2"
 
   url "https://j2i8lgdonziyik2f.public.blob.vercel-storage.com/Wave-AI-Desktop-#{version}-mac-universal.dmg"
   name "Wave AI"
